@@ -77,9 +77,11 @@ function Main(props) {
           { 
             isLoading ? 
             "" :
-            cards.map(({ id, ...card }) => <Card key={id} {...card}></Card>) 
+            cards.map(({ id, ...card }) => (
+                <Card onCardClick={props.onCardClick} key={id} card={{...card}}></Card>
+              ) 
+            )
           }
-
         </ul>
       </section>
     </main>
