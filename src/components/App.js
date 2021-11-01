@@ -97,19 +97,7 @@ function App() {
 
       <ImagePopup />
 
-      <template className="card-template">
-        <li className="card">
-          <img className="card__image"
-              src="#"
-              alt="Альтернативный текст" />
-          <h2 className="card__name"></h2>
-          <div className="card__like-container">
-            <button className="card__icon-like" type="button"></button>
-            <span className="card__like-counter"></span>
-          </div>
-          <button className="card__trash" type="button"></button>
-        </li>
-      </template>
+
 
     </div>
   );

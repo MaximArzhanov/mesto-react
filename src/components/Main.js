@@ -1,5 +1,6 @@
 import React from 'react';
 import api from '../utils/Api'
+import Card from './Card'
 
 function Main(props) {
 
@@ -7,14 +8,48 @@ function Main(props) {
   const [userDescription, SetUserDescription] = React.useState("");
   const [userAvatar, SetUserAvatar] = React.useState("");
 
+  /** Состояние загрузки */
+  const [isLoading, SetIsLoading] = React.useState(false);
+
+  /** Массив загруженных карточек */
+  const [cards, SetCards] = React.useState([]);
+
+
+  /** Запрос информации о пользователе (При загрузке страницы) */
   React.useEffect(() => {
+    SetIsLoading(true);
     api.getUserInformation()
       .then((data) => {
-        console.log(data);
         SetUserName(data.name);
         SetUserDescription(data.about);
         SetUserAvatar(data.avatar);
       })
+      .catch((err) => {
+        console.error(err);
+      })
+      .finally(() => {
+        SetIsLoading(false);
+      });
+  }, [] );
+
+  /** Запрос карточек (При загрузке страницы) */
+  React.useEffect(() => {
+    SetIsLoading(true);
+    api.getCards()
+      .then((data) => {
+        SetCards(data.map((item) => ({
+            id: item._id,
+            title: item.name,
+            link: item.link,
+            likes: item.likes.length
+        })));
+      })
+      .catch((err) => {
+        console.error(err);
+      })
+      .finally(() => {
+        SetIsLoading(false);
+      });
   }, [] );
 
   return (
@@ -39,9 +74,18 @@ function Main(props) {
 
       <section className="places content__places">
         <ul className="cards">
+          { 
+            isLoading ? 
+            "" :
+            cards.map(({ id, ...card }) => <Card key={id} {...card}></Card>) 
+          }
+
         </ul>
       </section>
     </main>
+
+    
+
   );
 }
 
