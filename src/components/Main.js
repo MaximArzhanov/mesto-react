@@ -1,12 +1,9 @@
 import React from 'react';
 import api from '../utils/Api'
 import Card from './Card'
+import { CurrentUserContext } from '../contexts/CurrentUserContext';
 
 function Main(props) {
-
-  const [userName, SetUserName] = React.useState("");
-  const [userDescription, SetUserDescription] = React.useState("");
-  const [userAvatar, SetUserAvatar] = React.useState("");
 
   /** Состояние загрузки */
   const [isLoading, SetIsLoading] = React.useState(false);
@@ -14,23 +11,8 @@ function Main(props) {
   /** Массив загруженных карточек */
   const [cards, SetCards] = React.useState([]);
 
-
-  /** Запрос информации о пользователе (При загрузке страницы) */
-  React.useEffect(() => {
-    SetIsLoading(true);
-    api.getUserInformation()
-      .then((data) => {
-        SetUserName(data.name);
-        SetUserDescription(data.about);
-        SetUserAvatar(data.avatar);
-      })
-      .catch((err) => {
-        console.error(err);
-      })
-      .finally(() => {
-        SetIsLoading(false);
-      });
-  }, [] );
+  /** Подписка на контекст CurrentUserContext */
+  const currentUser = React.useContext(CurrentUserContext);
 
   /** Запрос карточек (При загрузке страницы) */
   React.useEffect(() => {
@@ -38,10 +20,11 @@ function Main(props) {
     api.getCards()
       .then((data) => {
         SetCards(data.map((item) => ({
+            ownerId: item.owner._id,
             id: item._id,
             title: item.name,
             link: item.link,
-            likes: item.likes.length
+            likes: item.likes
         })));
       })
       .catch((err) => {
@@ -57,16 +40,16 @@ function Main(props) {
       <section className="profile">
         <div className="profile__avatar-container">
           <img className="profile__avatar"
-               src={userAvatar}
+               src={currentUser.avatar}
                alt="Аватарка пользователя." />
           <button className="profile__edit-avatar"
                   onClick={props.onEditAvatar}></button>
         </div>
         <div className="profile__info">
-          <h1 className="profile__name">{userName}</h1>
+          <h1 className="profile__name">{currentUser.name}</h1>
           <button className="profile__edit-button" type="button"
                   onClick={props.onEditProfile}></button>
-          <p className="profile__description">{userDescription}</p>
+          <p className="profile__description">{currentUser.about}</p>
         </div>
         <button className="profile__add-button" type="button"
                 onClick={props.onAddPlace}></button>
@@ -77,8 +60,8 @@ function Main(props) {
           { 
             isLoading ? 
             "" :
-            cards.map(({ id, ...card }) => (
-                <Card onCardClick={props.onCardClick} key={id} card={{...card}}></Card>
+            cards.map(({ key, ...card }) => (
+                <Card onCardClick={props.onCardClick} key={card.id} card={{...card}}></Card>
               ) 
             )
           }
