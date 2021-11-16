@@ -19,13 +19,7 @@ function Main(props) {
     SetIsLoading(true);
     api.getCards()
       .then((data) => {
-        SetCards(data.map((item) => ({
-            ownerId: item.owner._id,
-            id: item._id,
-            title: item.name,
-            link: item.link,
-            likes: item.likes
-        })));
+        SetCards(data.map((item) => (item)));
       })
       .catch((err) => {
         console.error(err);
@@ -61,7 +55,7 @@ function Main(props) {
             isLoading ? 
             "" :
             cards.map(({ key, ...card }) => (
-                <Card onCardClick={props.onCardClick} key={card.id} card={{...card}}></Card>
+                <Card onCardClick={props.onCardClick} key={card._id} card={{...card}}></Card>
               ) 
             )
           }
