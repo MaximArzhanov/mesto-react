@@ -29,6 +29,18 @@ function Main(props) {
       });
   }, [] );
 
+  function handleCardLike(card) {
+    const isLiked = card.likes.some(i => i._id === currentUser._id);
+
+    api.changeLikeCardStatus(card._id, !isLiked)
+      .then((newCard) => {
+        SetCards((state) => state.map((c) => c._id === card._id ? newCard : c));
+      })
+      .catch((err) => {
+        console.error(err);
+      })
+  } 
+
   return (
     <main className="content page__content">
       <section className="profile">
@@ -55,7 +67,11 @@ function Main(props) {
             isLoading ? 
             "" :
             cards.map(({ key, ...card }) => (
-                <Card onCardClick={props.onCardClick} key={card._id} card={{...card}}></Card>
+                <Card onCardClick={props.onCardClick}
+                      key={card._id}
+                      card={{...card}}
+                      onCardLike={handleCardLike}>
+                </Card>
               ) 
             )
           }
