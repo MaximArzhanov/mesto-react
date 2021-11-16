@@ -1,7 +1,7 @@
 import React from 'react';
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
 
-export default function Card({ onCardClick, onCardLike, card }) {
+export default function Card({ onCardClick, onCardLike, onCardDelete, card }) {
 
     /** Подписка на контекст CurrentUserContext */
     const currentUser = React.useContext(CurrentUserContext);
@@ -27,8 +27,14 @@ export default function Card({ onCardClick, onCardLike, card }) {
       onCardClick(card);
     }
 
+    /** Событие при клике на кнопку "лайк" */
     function handleLikeClick() {
       onCardLike(card);
+    }
+
+    /** Событие при клике на кнопку "удалить" */
+    function handleDeleteClick() {
+      onCardDelete(card);
     }
 
     return (
@@ -44,7 +50,9 @@ export default function Card({ onCardClick, onCardLike, card }) {
                   onClick={handleLikeClick}></button>
           <span className="card__like-counter">{card.likes.length}</span>
         </div>
-        <button className={cardDeleteButtonClassName} type="button"></button>
+        <button className={cardDeleteButtonClassName}
+                type="button"
+                onClick={handleDeleteClick}></button>
       </li>
     )
 }

@@ -29,6 +29,8 @@ function Main(props) {
       });
   }, [] );
 
+  /** Определяет, ставил ли пользователь лайк для текущей карточки
+   *  Ставит/удаляет лайк   */
   function handleCardLike(card) {
     const isLiked = card.likes.some(i => i._id === currentUser._id);
 
@@ -40,6 +42,19 @@ function Main(props) {
         console.error(err);
       })
   } 
+
+  /** Удаляет карточку  */
+  function handleCardDelete(card) {
+    api.deleteCard(card._id)
+      .then((data) => {
+        SetCards((state) => state.filter((c) => {
+          return (c._id !== card._id) //Возвращает все карточки кроме той которую удалили
+        }));
+      })
+      .catch((err) => {
+        console.error(err);
+      })
+  }
 
   return (
     <main className="content page__content">
@@ -70,7 +85,8 @@ function Main(props) {
                 <Card onCardClick={props.onCardClick}
                       key={card._id}
                       card={{...card}}
-                      onCardLike={handleCardLike}>
+                      onCardLike={handleCardLike}
+                      onCardDelete={handleCardDelete}>
                 </Card>
               ) 
             )
