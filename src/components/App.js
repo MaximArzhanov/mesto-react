@@ -4,6 +4,7 @@ import Header from './Header'
 import Main from './Main'
 import Footer from './Footer'
 import PopupWithForm from './PopupWithForm'
+import EditProfilePopup from './EditProfilePopup'
 import ImagePopup from './ImagePopup'
 import api from '../utils/Api'
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
@@ -22,18 +23,22 @@ function App() {
 
   const [selectedCard, SetSelectedCard] = React.useState({});
 
+  /** Открывает окно редактирования профиля */
   function handleEditProfileClick() {
     SetIsEditProfilePopupOpen(true);
   }
 
+  /** Открывает окно добавления новой карточки */
   function handleAddPlaceClick() {
     SetIsAddPlacePopupOpen(true);
   }
 
+  /** Открывает окно обновления аватарки */
   function handleEditAvatarClick() {
     SetIsEditAvatarPopupOpen(true);
   }
 
+  /** Закрывает все модальные окна */
   function closeAllPopups() {
     SetIsEditProfilePopupOpen(false);
     SetIsAddPlacePopupOpen(false);
@@ -41,11 +46,12 @@ function App() {
     SetSelectedCard({});
   }
 
+  /** Открывает окно с увеличенным изображением */
   function handleCardClick(card) {
     SetSelectedCard(card);
   }
 
-  /** Запрос информации о пользователе при загрузке страницы */
+  /** Запрашивает информацию о пользователе при загрузке страницы */
   React.useEffect(() => {
     //SetIsLoading(true);
     api.getUserInformation()
@@ -59,6 +65,18 @@ function App() {
         SetIsLoading(false);
       });*/
   }, [] );
+
+  /** Обновляет информацию о пользователе */
+  function handleUpdateUser({ name, about }) {
+    api.updateUserInformation(name, about)
+      .then((data) => {
+        SetCurrentUser(data);
+        closeAllPopups();
+      })
+      .catch((err) => {
+        console.error(err);
+      })
+  }
 
   return (
     <div className="root">
@@ -76,20 +94,8 @@ function App() {
 
         </div>
 
-        <PopupWithForm title="Редактировать профиль" name="edit-profile" 
-                      isOpen={isEditProfilePopupOpen}
-                      onClose={closeAllPopups}>
-          <input id="name-user-input" className="popup__input popup__input_type_name"
-                type="text" name="name" required minLength="2" maxLength="40" />
-          <span className="popup__input-error name-user-input-error"></span>
-          <input id="description-input" className="popup__input popup__input_type_description"
-                type="text" name="description" required minLength="2" maxLength="200" />
-          <span className="popup__input-error description-input-error"></span>
-          <button className="popup__button" type="submit">
-            Сохранить
-          </button>
-        </PopupWithForm>
-
+        <EditProfilePopup isOpen={isEditProfilePopupOpen} onClose={closeAllPopups}
+                          onUpdateUser={handleUpdateUser} /> 
 
         <PopupWithForm title="Новое место" name="add-new-place"
                       isOpen={isAddPlacePopupOpen}
