@@ -1,60 +1,11 @@
 import React from 'react';
-import api from '../utils/Api'
 import Card from './Card'
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
 
 function Main(props) {
 
-  /** Состояние загрузки */
-  const [isLoading, SetIsLoading] = React.useState(false);
-
-  /** Массив загруженных карточек */
-  const [cards, SetCards] = React.useState([]);
-
   /** Подписка на контекст CurrentUserContext */
   const currentUser = React.useContext(CurrentUserContext);
-
-  /** Запрос карточек (При загрузке страницы) */
-  React.useEffect(() => {
-    SetIsLoading(true);
-    api.getCards()
-      .then((data) => {
-        SetCards(data.map((item) => (item)));
-      })
-      .catch((err) => {
-        console.error(err);
-      })
-      .finally(() => {
-        SetIsLoading(false);
-      });
-  }, [] );
-
-  /** Определяет, ставил ли пользователь лайк для текущей карточки
-   *  Ставит/удаляет лайк   */
-  function handleCardLike(card) {
-    const isLiked = card.likes.some(i => i._id === currentUser._id);
-
-    api.changeLikeCardStatus(card._id, !isLiked)
-      .then((newCard) => {
-        SetCards((state) => state.map((c) => c._id === card._id ? newCard : c));
-      })
-      .catch((err) => {
-        console.error(err);
-      })
-  } 
-
-  /** Удаляет карточку  */
-  function handleCardDelete(card) {
-    api.deleteCard(card._id)
-      .then((data) => {
-        SetCards((state) => state.filter((c) => {
-          return (c._id !== card._id) //Возвращает все карточки кроме той которую удалили
-        }));
-      })
-      .catch((err) => {
-        console.error(err);
-      })
-  }
 
   return (
     <main className="content page__content">
@@ -79,14 +30,14 @@ function Main(props) {
       <section className="places content__places">
         <ul className="cards">
           { 
-            isLoading ? 
+            props.isLoading ? 
             "" :
-            cards.map(({ key, ...card }) => (
+            props.cards.map(({ key, ...card }) => (
                 <Card onCardClick={props.onCardClick}
                       key={card._id}
                       card={{...card}}
-                      onCardLike={handleCardLike}
-                      onCardDelete={handleCardDelete}>
+                      onCardLike={props.onCardLike}
+                      onCardDelete={props.onCardDelete}>
                 </Card>
               ) 
             )
