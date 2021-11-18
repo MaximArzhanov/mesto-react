@@ -5,6 +5,7 @@ import Main from './Main'
 import Footer from './Footer'
 import PopupWithForm from './PopupWithForm'
 import EditProfilePopup from './EditProfilePopup'
+import EditAvatarPopup from './EditAvatarPopup'
 import ImagePopup from './ImagePopup'
 import api from '../utils/Api'
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
@@ -53,7 +54,6 @@ function App() {
 
   /** Запрашивает информацию о пользователе при загрузке страницы */
   React.useEffect(() => {
-    //SetIsLoading(true);
     api.getUserInformation()
       .then((data) => {
         SetCurrentUser(data);
@@ -61,13 +61,11 @@ function App() {
       .catch((err) => {
         console.error(err);
       })
-      /*.finally(() => {
-        SetIsLoading(false);
-      });*/
   }, [] );
 
   /** Обновляет информацию о пользователе */
   function handleUpdateUser({ name, about }) {
+    //SetIsLoading(true);
     api.updateUserInformation(name, about)
       .then((data) => {
         SetCurrentUser(data);
@@ -76,6 +74,26 @@ function App() {
       .catch((err) => {
         console.error(err);
       })
+      /*.finally(() => {
+        SetIsLoading(false);
+      });*/
+  }
+
+  /** Обновляет аватарку пользователя */
+  function handleUpdateAvatar({ avatar, clearInputAvatar }) {
+    //SetIsLoading(true);
+    api.updateUserAvatar(avatar)
+      .then((data) => {
+        SetCurrentUser(data);
+        closeAllPopups();
+      })
+      .catch((err) => {
+        console.error(err);
+      })
+      .finally(() => {
+        //SetIsLoading(false);
+        clearInputAvatar(); // Очищает поле ввода аватарки пользователя
+      });
   }
 
   return (
@@ -95,45 +113,34 @@ function App() {
         </div>
 
         <EditProfilePopup isOpen={isEditProfilePopupOpen} onClose={closeAllPopups}
-                          onUpdateUser={handleUpdateUser} /> 
+                          onUpdateUser={handleUpdateUser} />
+        
+        <EditAvatarPopup isOpen={isEditAvatarPopupOpen} onClose={closeAllPopups}
+                         onUpdateAvatar={handleUpdateAvatar} /> 
 
         <PopupWithForm title="Новое место" name="add-new-place"
-                      isOpen={isAddPlacePopupOpen}
-                      onClose={closeAllPopups}>
+                       isOpen={isAddPlacePopupOpen}
+                       onClose={closeAllPopups}>
           <input id="name-picture-input" className="popup__input popup__input_type_name"
-                type="text" name="name" required minLength="2" maxLength="30"
-                placeholder="Название" />
+                 type="text" name="name" required minLength="2" maxLength="30"
+                 placeholder="Название" />
           <span className="popup__input-error name-picture-input-error"></span>
           <input id="url-input-place" className="popup__input popup__input_type_link"
-                type="url" name="link" required
-                placeholder="Ссылка на картинку" />
+                 type="url" name="link" required
+                 placeholder="Ссылка на картинку" />
           <span className="popup__input-error url-input-place-error"></span>
           <button className="popup__button" type="submit">
             Создать
           </button>
         </PopupWithForm>
         
-        
         <PopupWithForm title="Вы уверены?" name="confirmation"
-                      onClose={closeAllPopups}>
+                       onClose={closeAllPopups}>
           <button className="popup__button" type="button">
             Да
           </button>
         </PopupWithForm>
         
-        
-        <PopupWithForm title="Обновить аватар" name="update-avatar"
-                      isOpen={isEditAvatarPopupOpen}
-                      onClose={closeAllPopups}>
-          <input id="url-input-avatar" className="popup__input popup__input_type_link"
-                type="url" name="link" required
-                placeholder="Ссылка на картинку" />
-          <span className="popup__input-error url-input-avatar-error"></span>
-          <button className="popup__button" type="submit">
-            Сохранить
-          </button>
-        </PopupWithForm>
-
         <ImagePopup card={selectedCard} onClose={closeAllPopups}/>
 
       </CurrentUserContext.Provider>

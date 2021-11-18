@@ -7,13 +7,13 @@ function EditProfilePopup (props) {
   /** Текущий пользователь */
   const currentUser = React.useContext(CurrentUserContext);
 
-  const [name, setName] = React.useState('');
-  const [description, setDescription] = React.useState('');
+  const [name, SetName] = React.useState('');
+  const [description, SetDescription] = React.useState('');
 
   /** Записывает информацию о пользователе в стейт-переменные */
   React.useEffect(() => {
-    setName(currentUser.name);
-    setDescription(currentUser.about);
+    SetName(currentUser.name);
+    SetDescription(currentUser.about);
   }, [currentUser]); 
 
   /** Отправляет запрос к api. Обновляет информацию о пользователе */
@@ -27,12 +27,12 @@ function EditProfilePopup (props) {
   
   /** Записывает имя пользователя в стейт-переменную */
   function handleChangeName(e) {
-    setName(e.target.value);
+    SetName(e.target.value);
   }
 
   /** Записывает описание пользователя в стейт-переменную */
   function handleChangeDescription(e) {
-    setDescription(e.target.value);
+    SetDescription(e.target.value);
   }
 
   return (
