@@ -49,7 +49,7 @@ function EditProfilePopup(props) {
                value={description || ' '} onChange={handleChangeDescription} />
         <span className="popup__input-error description-input-error"></span>
         <button className="popup__button" type="submit">
-            Сохранить
+          {props.isLoading ? 'Сохранить...' : 'Сохранить'}
         </button>
     </PopupWithForm>
   );

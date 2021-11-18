@@ -69,7 +69,7 @@ function App() {
 
   /** Обновляет информацию о пользователе */
   function handleUpdateUser({ name, about }) {
-    //SetIsLoading(true);
+    SetIsLoading(true);
     api.updateUserInformation(name, about)
       .then((data) => {
         SetCurrentUser(data);
@@ -78,14 +78,14 @@ function App() {
       .catch((err) => {
         console.error(err);
       })
-      /*.finally(() => {
+      .finally(() => {
         SetIsLoading(false);
-      });*/
+      });
   }
 
   /** Обновляет аватарку пользователя */
   function handleUpdateAvatar({ avatar }) {
-    //SetIsLoading(true);
+    SetIsLoading(true);
     api.updateUserAvatar(avatar)
       .then((data) => {
         SetCurrentUser(data);
@@ -95,13 +95,13 @@ function App() {
         console.error(err);
       })
       .finally(() => {
-        //SetIsLoading(false);
+        SetIsLoading(false);
       });
   }
 
   /** Добавляет новую карточку */
   function handleAddPlaceSubmit({ name, link }) {
-    //SetIsLoading(true);
+    SetIsLoading(true);
     api.addCard(name, link)
       .then((newCard) => {
         SetCards([newCard, ...cards]); 
@@ -111,7 +111,7 @@ function App() {
         console.error(err);
       })
       .finally(() => {
-        //SetIsLoading(false);
+        SetIsLoading(false);
       });
   }
 
@@ -177,13 +177,16 @@ function App() {
         </div>
 
         <EditProfilePopup isOpen={isEditProfilePopupOpen} onClose={closeAllPopups}
-                          onUpdateUser={handleUpdateUser} />
+                          onUpdateUser={handleUpdateUser}
+                          isLoading={isLoading} />
         
         <EditAvatarPopup isOpen={isEditAvatarPopupOpen} onClose={closeAllPopups}
-                         onUpdateAvatar={handleUpdateAvatar} /> 
+                         onUpdateAvatar={handleUpdateAvatar}
+                         isLoading={isLoading} /> 
 
         <AddPlacePopup isOpen={isAddPlacePopupOpen} onClose={closeAllPopups}
-                          onAddPlace={handleAddPlaceSubmit} />
+                       onAddPlace={handleAddPlaceSubmit}
+                       isLoading={isLoading} />
         
         <PopupWithForm title="Вы уверены?" name="confirmation"
                        onClose={closeAllPopups}>

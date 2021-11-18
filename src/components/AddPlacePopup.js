@@ -47,7 +47,7 @@ function AddPlacePopup(props) {
              value={link || ''} onChange={handleChangeLink} />
       <span className="popup__input-error url-input-place-error"></span>
       <button className="popup__button" type="submit">
-        Создать
+        {props.isLoading ? 'Создать...' : 'Создать'}
       </button>
     </PopupWithForm>
   );

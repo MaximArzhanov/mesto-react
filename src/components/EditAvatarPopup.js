@@ -33,7 +33,7 @@ function EditAvatarPopup(props) {
              ref={inputAvatarRef} onChange={handleChange} />
       <span className="popup__input-error url-input-avatar-error"></span>
       <button className="popup__button" type="submit">
-        Сохранить
+        {props.isLoading ? 'Сохранить...' : 'Сохранить'}
       </button>
     </PopupWithForm>
   );
