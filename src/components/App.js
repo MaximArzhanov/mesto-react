@@ -53,6 +53,11 @@ function App() {
     SetIsConfirmationPopupOpen(true);
   }
 
+  /** Открывает окно с увеличенным изображением */
+  function handleCardClick(card) {
+    SetSelectedCard(card);
+  }
+
   /** Закрывает все модальные окна */
   function closeAllPopups() {
     SetIsEditProfilePopupOpen(false);
@@ -62,20 +67,20 @@ function App() {
     SetSelectedCard({});
   }
 
-  /** Открывает окно с увеличенным изображением */
-  function handleCardClick(card) {
-    SetSelectedCard(card);
-  }
-
-  /** Запрашивает информацию о пользователе при загрузке страницы */
+  /** Запрашивает карточки и информацию о пользователе при загрузке страницы */
   React.useEffect(() => {
-    api.getUserInformation()
+    SetIsLoading(true);
+    Promise.all([api.getUserInformation(), api.getCards()])
       .then((data) => {
-        SetCurrentUser(data);
+        SetCurrentUser(data[0]);
+        SetCards(data[1].map((item) => (item)));
       })
       .catch((err) => {
         console.error(err);
       })
+      .finally(() => {
+        SetIsLoading(false);
+      });
   }, [] );
 
   /** Обновляет информацию о пользователе */
@@ -126,34 +131,6 @@ function App() {
       });
   }
 
-  /** Запрос карточек (При загрузке страницы) */
-  React.useEffect(() => {
-    SetIsLoading(true);
-    api.getCards()
-      .then((data) => {
-        SetCards(data.map((item) => (item)));
-      })
-      .catch((err) => {
-        console.error(err);
-      })
-      .finally(() => {
-        SetIsLoading(false);
-      });
-  }, [] );
-
-  /** Определяет, ставил ли пользователь лайк для текущей карточки
-  *   Ставит/удаляет лайк   */
-  function handleCardLike(card) {
-    const isLiked = card.likes.some(i => i._id === currentUser._id);
-    api.changeLikeCardStatus(card._id, !isLiked)
-      .then((newCard) => {
-        SetCards((state) => state.map((c) => c._id === card._id ? newCard : c));
-      })
-      .catch((err) => {
-        console.error(err);
-      })
-  } 
-
   /** Удаляет карточку  */
   function handleCardDeleteSubmit(card) {
     SetIsLoading(true);
@@ -172,13 +149,25 @@ function App() {
       });
   }
 
+  /** Определяет, ставил ли пользователь лайк для текущей карточки
+  *   Ставит/удаляет лайк   */
+  function handleCardLike(card) {
+    const isLiked = card.likes.some(i => i._id === currentUser._id);
+    api.changeLikeCardStatus(card._id, !isLiked)
+      .then((newCard) => {
+        SetCards((state) => state.map((c) => c._id === card._id ? newCard : c));
+      })
+      .catch((err) => {
+        console.error(err);
+      })
+  } 
+
   return (
     <div className="root">
 
       <CurrentUserContext.Provider value={currentUser}>
 
         <div className="page root__page">
-
           <Header />
           <Main onEditProfile={handleEditProfileClick}
                 onAddPlace={handleAddPlaceClick}
@@ -189,26 +178,20 @@ function App() {
                 onCardLike={handleCardLike}
                 isLoading={isLoading} />
           <Footer />
-
         </div>
-
         <EditProfilePopup isOpen={isEditProfilePopupOpen} onClose={closeAllPopups}
                           onUpdateUser={handleUpdateUser}
                           isLoading={isLoading} />
-        
         <EditAvatarPopup isOpen={isEditAvatarPopupOpen} onClose={closeAllPopups}
                          onUpdateAvatar={handleUpdateAvatar}
                          isLoading={isLoading} /> 
-
         <AddPlacePopup isOpen={isAddPlacePopupOpen} onClose={closeAllPopups}
                        onAddPlace={handleAddPlaceSubmit}
                        isLoading={isLoading} />
-
         <ConfirmationPopup isOpen={isConfirmationPopupOpen} onClose={closeAllPopups}
                                    onConfirmation={handleCardDeleteSubmit}
                                    isLoading={isLoading}
                                    card={card} />
-        
         <ImagePopup card={selectedCard} onClose={closeAllPopups}/>
 
       </CurrentUserContext.Provider>
