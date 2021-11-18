@@ -1,7 +1,7 @@
 import React from 'react';
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
 
-export default function Card({ onCardClick, onCardLike, onCardDelete, card }) {
+const Chat = React.memo(({ onCardClick, onCardLike, card, onConfirmation }) => {
 
     /** Подписка на контекст CurrentUserContext */
     const currentUser = React.useContext(CurrentUserContext);
@@ -32,9 +32,9 @@ export default function Card({ onCardClick, onCardLike, onCardDelete, card }) {
       onCardLike(card);
     }
 
-    /** Событие при клике на кнопку "удалить" */
+    /** Событие при клике на кнопку "удалить" (Открывает окно подтверждения) */
     function handleDeleteClick() {
-      onCardDelete(card);
+      onConfirmation(card);
     }
 
     return (
@@ -54,5 +54,8 @@ export default function Card({ onCardClick, onCardLike, onCardDelete, card }) {
                 type="button"
                 onClick={handleDeleteClick}></button>
       </li>
-    )
-}
+    );
+  }
+); 
+
+export default Chat;

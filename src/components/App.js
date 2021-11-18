@@ -3,10 +3,10 @@ import '../index.css';
 import Header from './Header'
 import Main from './Main'
 import Footer from './Footer'
-import PopupWithForm from './PopupWithForm'
 import EditProfilePopup from './EditProfilePopup'
 import EditAvatarPopup from './EditAvatarPopup'
 import AddPlacePopup from './AddPlacePopup'
+import ConfirmationPopup from './ConfirmationPopup'
 import ImagePopup from './ImagePopup'
 import api from '../utils/Api'
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
@@ -19,9 +19,13 @@ function App() {
   /** Состояние загрузки */
   const [isLoading, SetIsLoading] = React.useState(false);
 
+  /** Карточка (Для удаления) */
+  const [card, SetCard] = React.useState({});
+
   const [isEditProfilePopupOpen, SetIsEditProfilePopupOpen] = React.useState(false);
   const [isAddPlacePopupOpen, SetIsAddPlacePopupOpen] = React.useState(false);
   const [isEditAvatarPopupOpen, SetIsEditAvatarPopupOpen] = React.useState(false);
+  const [isConfirmationPopupOpen, SetIsConfirmationPopupOpen] = React.useState(false);
 
   const [selectedCard, SetSelectedCard] = React.useState({});
 
@@ -43,11 +47,18 @@ function App() {
     SetIsEditAvatarPopupOpen(true);
   }
 
+  /** Открывает окно подтверждения */
+  function handleConfirmationClick(card) {
+    SetCard(card);
+    SetIsConfirmationPopupOpen(true);
+  }
+
   /** Закрывает все модальные окна */
   function closeAllPopups() {
     SetIsEditProfilePopupOpen(false);
     SetIsAddPlacePopupOpen(false);
     SetIsEditAvatarPopupOpen(false);
+    SetIsConfirmationPopupOpen(false);
     SetSelectedCard({});
   }
 
@@ -144,16 +155,21 @@ function App() {
   } 
 
   /** Удаляет карточку  */
-  function handleCardDelete(card) {
+  function handleCardDeleteSubmit(card) {
+    SetIsLoading(true);
     api.deleteCard(card._id)
       .then((data) => {
         SetCards((state) => state.filter((c) => {
           return (c._id !== card._id) //Возвращает все карточки кроме той которую удалили
         }));
+        closeAllPopups();
       })
       .catch((err) => {
         console.error(err);
       })
+      .finally(() => {
+        SetIsLoading(false);
+      });
   }
 
   return (
@@ -167,10 +183,10 @@ function App() {
           <Main onEditProfile={handleEditProfileClick}
                 onAddPlace={handleAddPlaceClick}
                 onEditAvatar={handleEditAvatarClick}
+                onConfirmation={handleConfirmationClick}
                 onCardClick={handleCardClick}
                 cards={cards}
                 onCardLike={handleCardLike}
-                onCardDelete={handleCardDelete}
                 isLoading={isLoading} />
           <Footer />
 
@@ -187,13 +203,11 @@ function App() {
         <AddPlacePopup isOpen={isAddPlacePopupOpen} onClose={closeAllPopups}
                        onAddPlace={handleAddPlaceSubmit}
                        isLoading={isLoading} />
-        
-        <PopupWithForm title="Вы уверены?" name="confirmation"
-                       onClose={closeAllPopups}>
-          <button className="popup__button" type="button">
-            Да
-          </button>
-        </PopupWithForm>
+
+        <ConfirmationPopup isOpen={isConfirmationPopupOpen} onClose={closeAllPopups}
+                                   onConfirmation={handleCardDeleteSubmit}
+                                   isLoading={isLoading}
+                                   card={card} />
         
         <ImagePopup card={selectedCard} onClose={closeAllPopups}/>
 

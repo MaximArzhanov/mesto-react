@@ -36,8 +36,8 @@ function Main(props) {
                 <Card onCardClick={props.onCardClick}
                       key={card._id}
                       card={{...card}}
-                      onCardLike={props.onCardLike}
-                      onCardDelete={props.onCardDelete}>
+                      onConfirmation={props.onConfirmation}
+                      onCardLike={props.onCardLike} >
                 </Card>
               ) 
             )
@@ -45,9 +45,6 @@ function Main(props) {
         </ul>
       </section>
     </main>
-
-    
-
   );
 }
 
