@@ -14,7 +14,7 @@ function EditProfilePopup(props) {
   React.useEffect(() => {
     SetName(currentUser.name);
     SetDescription(currentUser.about);
-  }, [currentUser]); 
+  }, [currentUser, props.isOpen]); 
 
   /** Отправляет запрос к api. Обновляет информацию о пользователе */
   function handleSubmit(e) {
