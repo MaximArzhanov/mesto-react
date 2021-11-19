@@ -35,7 +35,9 @@ function AddPlacePopup(props) {
     <PopupWithForm title="Новое место" name="add-new-place"
                    isOpen={props.isOpen}
                    onClose={props.onClose}
-                   onSubmit={handleSubmit} >
+                   onSubmit={handleSubmit}
+                   isLoading={props.isLoading} 
+                   buttonText="Создать" >
       <input id="name-picture-input" className="popup__input popup__input_type_name"
              type="text" name="name" required minLength="2" maxLength="30"
              placeholder="Название"
@@ -46,9 +48,6 @@ function AddPlacePopup(props) {
              placeholder="Ссылка на картинку"
              value={link || ''} onChange={handleChangeLink} />
       <span className="popup__input-error url-input-place-error"></span>
-      <button className="popup__button" type="submit">
-        {props.isLoading ? 'Создать...' : 'Создать'}
-      </button>
     </PopupWithForm>
   );
 }
